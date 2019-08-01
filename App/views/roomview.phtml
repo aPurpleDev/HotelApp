@@ -1,0 +1,45 @@
+<main>
+
+<h1>Browse Rooms</h1>
+<br>
+<br>
+<form action="<?php echo route_to_url("bookingview"); ?>" method="POST">
+ Number:<br>
+ <input type="number" name="number"><br>
+ Floor:<br>
+ <input type="number" name="floor"><br>
+ Type<br>
+ <input type="text" name="type"><br>
+ Beds:<br>
+ <input type="number" name="beds"><br>
+ Air conditioner:<br>
+ <input type="checkbox" name="hasAirConditioner" value="true">
+    <label for="hasAirConditioner">Do you need an Air conditioner ?</label><br>
+ Television:<br>
+ <input type="checkbox" name="hasTelevision" value="true">
+    <label for="hasTelevision">Would you like a TV ?</label><br>
+ Cost:<br>
+ <input type="number" name="costPerNight"><br>
+ Country:<br>
+ <input type="text" name="country"><br>
+ Phone:<br>
+ <input type="number" name="phone"><br>
+ <input type="submit" name="submit" value="submit">
+</form>
+</main>
+
+<?php
+use App\controller\BookingRoom;
+
+if ( isset( $_POST['submit'] ) ){
+
+var_dump($_POST);
+$defaultRoom = new BookingRoom();
+var_dump($defaultRoom);
+
+}
+else{
+  echo "no submit";
+}
+
+?>
