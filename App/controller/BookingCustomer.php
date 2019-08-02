@@ -7,6 +7,8 @@ use Predis\Client;
 class BookingCustomer
 {
   public $client;
+  public $customerdb;
+  public $customercollection;
 
   public $firstname;
   public $lastname;
@@ -17,26 +19,18 @@ class BookingCustomer
   public $country;
   public $phone;
 
-  //
-  // public function test(){
-  //   $predistest = new Client([
-	// 	    'scheme' => 'tcp',
-	// 	    'host'   => '127.0.0.1',
-	// 	    'port'   => 6379,
-	// 	]);
-  //
-  //   $predistest->set("requesttest","valuetest");
-  //
-  // }
-  //
   public function __construct($firstname="default",$lastname="default",$title="default",$email="default",$address="default",$city="default",$country="default",$phone="0101")
   {
   if($this->client == null){
-    $this->client = new Client([
-          'scheme' => 'tcp',
-          'host'   => '127.0.0.1',
-          'port'   => 6379,
-      ]);
+    // $this->client = new Client([
+    //       'scheme' => 'tcp',
+    //       'host'   => '127.0.0.1',
+    //       'port'   => 6379,]);
+         $this->client = new \MongoDB\Client(
+        "mongodb://51.15.217.149:27718/?retryWrites=true&w=majority");
+
+         $this->customerdb = $this->client->ANGSF02_CH;
+         $this->customercollection = $this->customerdb->customercollection;
       }
 
   $this->firstname = $firstname;
@@ -47,12 +41,13 @@ class BookingCustomer
   $this->city = $city;
   $this->country = $country;
   $this->phone = $phone;
+
   }
 
   public function httpGetRequest()
   {
       if($this->client === true){
-      $this->client->HGET("customerlist",$this->firstname);
+      $this->client->HGETALL("customerlist");
       }
   }
 
@@ -62,16 +57,29 @@ class BookingCustomer
     {
       $newCustomer = new BookingCustomer($_POST['firstname'],$_POST['lastname'],$_POST['title'],$_POST['email'],$_POST['address'],$_POST['city'],$_POST['country'],$_POST['phone']);
     }
-
-    $newCustomer->saveCustomer();
-
-    return $newCustomer;
+      $newCustomer->saveCustomer();
+      //var_dump($newCustomer->findCustomer());
+      var_dump($newCustomer->findAllCustomers());
   }
 
   public function saveCustomer()
   {
-    //$this->client->SET($this->firstname,json_encode($this));
-    $this->client->HSET("customerlist",$this->firstname,json_encode($this));
+    $this->customerdb->customercollection->insertOne($this);
+  }
+
+  public function findCustomer()
+  {
+    return $this->customercollection->findOne($this);
+  }
+
+  public function findAllCustomers()
+  {
+          $customercursor = $this->customercollection->find();
+      foreach ( $customercursor as $id => $value )
+      {
+          echo "$id: ";
+          var_dump( $value );
+      }
   }
 
   // public function updateCustomer() //ajoute un object customer dans la BDD Mongo.

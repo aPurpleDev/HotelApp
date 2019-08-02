@@ -1,9 +1,10 @@
 <?php
-Namespace App\Controller;
+
+namespace App\Controller;
 
 class BookingRoom
 {
-  private static $roomdb = null;
+  public $pendingroomdb;
 
   public $number;
   public $floor;
@@ -20,10 +21,26 @@ class BookingRoom
 
   public function httpPostRequest()
   {
+    if(isset($_POST['submit']))
+    {
+      $newRoom = new BookingRoom($_POST['number'],$_POST['floor'],$_POST['type'],$_POST['beds'],$_POST['hasAirConditioner'],$_POST['hasTelevision'],$_POST['costPerNight']);
+    }
+
+    //$newRoom->pendingBooking();
+
+    return $newRoom;
   }
 
-  public function __contruct($number = 1,$floor = 1,$type = "type",$beds = "beds",$hasAirConditioner = true, $hasTelevision = false, $costPerNight = null, $bookings = array("checkinDate" => "2018-08-01", "checkoutDate" => "2018-08-29","adults" => "1", "children" => "0"))
+  public function __contruct($number = 1,$floor = 1,$type = "type",$beds = "beds",$hasAirConditioner = true, $hasTelevision = false, $costPerNight = null)
   {
+
+  if($this->pendingroomdb == null){
+    $pendingroomdb = new Client([
+          'scheme' => 'tcp',
+          'host'   => '127.0.0.1',
+          'port'   => 6379,
+      ]);
+  }
 
   $this->number = $number;
   $this->floor = $floor;
@@ -32,6 +49,13 @@ class BookingRoom
   $this->hasAirConditioner = $hasAirConditioner;
   $this->hasTelevision = $hasTelevision;
   $this->costPerNight = costPerNight;
-  $this->bookings = $bookings;
+  $this->bookings = array(checkinDate => $this->checkinDate, checkoutDate => $this->checkoutDate, adults => $this->adults, children => $this->children);
   }
+
+  public function pendingBooking(){
+
+  $this->pendingroomdb->HSET("pendingreservation",$this->number,json_encode($this));
+
+  }
+
 }

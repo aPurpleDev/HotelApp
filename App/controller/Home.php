@@ -9,5 +9,7 @@ class Home
     {
     }
 
-    
+    public function httpPostRequest()
+    {
+    }
 }
